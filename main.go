@@ -2,11 +2,31 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+
 	// "gotcp_test/client"
 	// "gotcp_test/server"
 	// "os"
+
+	"encoding/binary"
 )
+
+func Int64ToBytes(v int64) []byte {
+	var buffer bytes.Buffer
+	err := binary.Write(&buffer, binary.BigEndian, v)
+	if err != nil {
+		fmt.Println("err occur:", err)
+		return nil
+	}
+	return buffer.Bytes()
+}
+
+func Int32ToBytes(v uint32) []byte {
+	bytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(bytes, v)
+	return bytes
+}
 
 func main() {
 	// args := os.Args
@@ -17,5 +37,15 @@ func main() {
 	// } else {
 	// 	fmt.Println("error")
 	// }
-	fmt.Printf("hello world\n")
+
+	{
+		buf := Int64ToBytes(1234)
+		value := binary.BigEndian.Uint64(buf)
+		fmt.Println(value)
+	}
+	{
+		buf := Int32ToBytes(1234)
+		value := binary.BigEndian.Uint32(buf)
+		fmt.Println(value)
+	}
 }

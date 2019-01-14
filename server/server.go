@@ -33,9 +33,9 @@ func (this *Callback) OnConnect(c *gotcp.Conn) bool {
 }
 
 func (this *Callback) OnMessage(c *gotcp.Conn, p gotcp.Packet) bool {
-	packet := p.(*echo.MsgPacket)
+	packet := p.(*echo.EchoMsgPacket)
 	fmt.Printf("OnMessage:[%v] [%v]\n", packet.GetLength(), string(packet.GetBody()))
-	c.AsyncWritePacket(echo.NewMsgPacket(p.Serialize(), true), time.Second)
+	c.AsyncWritePacket(echo.NewEchoMsgPacket(p.Serialize(), true), time.Second)
 	return true
 }
 
@@ -50,22 +50,25 @@ func Runmain() {
 	listener, err := net.ListenTCP("tcp", tcpAddr)
 	checkError(err)
 
-	config := &gotcp.Config{
+	conf := &gotcp.Config{
 		PacketSendChanLimit:    20,
 		PacketReceiveChanLimit: 20,
 	}
-	srv := gotcp.NewServer(config, &Callback{}, &echo.MsgProtocol{})
+	srv := gotcp.NewServer(conf, &Callback{}, &echo.EchoMsgProtocol{})
 
-	go srv.Start(listener, time.Second*time.Duration(5))
+	go srv.Start(listener, time.Second*time.Duration(1))
 
 	fmt.Println("listening:", listener.Addr())
 
 	chSig := make(chan os.Signal)
-
 	signal.Notify(chSig, syscall.SIGINT, syscall.SIGTERM)
 	fmt.Println("Signal:", <-chSig)
 
 	srv.Stop()
+}
+
+func Runwait() {
+
 }
 
 func main() {

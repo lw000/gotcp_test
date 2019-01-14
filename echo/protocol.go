@@ -9,27 +9,27 @@ import (
 	"github.com/gansidui/gotcp"
 )
 
-type MsgPacket struct {
+type EchoMsgPacket struct {
 	buff []byte
 }
 
-type MsgProtocol struct {
+type EchoMsgProtocol struct {
 }
 
-func (this *MsgPacket) Serialize() []byte {
+func (this *EchoMsgPacket) Serialize() []byte {
 	return this.buff
 }
 
-func (this *MsgPacket) GetLength() uint32 {
+func (this *EchoMsgPacket) GetLength() uint32 {
 	return binary.BigEndian.Uint32(this.buff[0:4])
 }
 
-func (this *MsgPacket) GetBody() []byte {
+func (this *EchoMsgPacket) GetBody() []byte {
 	return this.buff[4:]
 }
 
-func NewMsgPacket(buff []byte, hasLengthField bool) *MsgPacket {
-	p := &MsgPacket{}
+func NewEchoMsgPacket(buff []byte, hasLengthField bool) *EchoMsgPacket {
+	p := &EchoMsgPacket{}
 	if hasLengthField {
 		p.buff = buff
 	} else {
@@ -41,7 +41,7 @@ func NewMsgPacket(buff []byte, hasLengthField bool) *MsgPacket {
 	return p
 }
 
-func (this *MsgProtocol) ReadPacket(conn *net.TCPConn) (gotcp.Packet, error) {
+func (this *EchoMsgProtocol) ReadPacket(conn *net.TCPConn) (gotcp.Packet, error) {
 	var (
 		lengthBytes []byte = make([]byte, 4)
 		length      uint32
@@ -62,5 +62,5 @@ func (this *MsgProtocol) ReadPacket(conn *net.TCPConn) (gotcp.Packet, error) {
 		return nil, err
 	}
 
-	return NewMsgPacket(buff, true), nil
+	return NewEchoMsgPacket(buff, true), nil
 }

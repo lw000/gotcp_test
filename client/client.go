@@ -23,14 +23,14 @@ func Runmain() {
 	checkError(err)
 	defer conn.Close()
 
-	protocol := &echo.MsgProtocol{}
+	protocol := &echo.EchoMsgProtocol{}
 
 	for i := 0; i < 3; i++ {
-		conn.Write(echo.NewMsgPacket([]byte("hello"), false).Serialize())
+		conn.Write(echo.NewEchoMsgPacket([]byte("hello"), false).Serialize())
 
 		p, err := protocol.ReadPacket(conn)
 		if err == nil {
-			npack := p.(*echo.MsgPacket)
+			npack := p.(*echo.EchoMsgPacket)
 			fmt.Printf("Server reply:[%v] [%v]\n", npack.GetLength(), string(npack.GetBody()))
 		}
 
