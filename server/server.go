@@ -11,7 +11,7 @@ import (
 
 	"github.com/gansidui/gotcp"
 
-	"gotcp_test/echo"
+	"demo/gotcp_test/echo"
 )
 
 func checkError(err error) {
@@ -27,7 +27,7 @@ func (this *Callback) OnConnect(c *gotcp.Conn) bool {
 	addr := c.GetRawConn().RemoteAddr()
 	c.PutExtraData(addr)
 
-	fmt.Println("OnConnect:", addr)
+	log.Println("OnConnect:", addr)
 
 	return true
 }
@@ -35,12 +35,15 @@ func (this *Callback) OnConnect(c *gotcp.Conn) bool {
 func (this *Callback) OnMessage(c *gotcp.Conn, p gotcp.Packet) bool {
 	packet := p.(*echo.EchoMsgPacket)
 	fmt.Printf("OnMessage:[%v] [%v]\n", packet.GetLength(), string(packet.GetBody()))
-	c.AsyncWritePacket(echo.NewEchoMsgPacket(p.Serialize(), true), time.Second)
+	err := c.AsyncWritePacket(echo.NewEchoMsgPacket(p.Serialize(), true), time.Second)
+	if err != nil {
+
+	}
 	return true
 }
 
 func (this *Callback) OnClose(c *gotcp.Conn) {
-	fmt.Println("OnClose", c.GetExtraData())
+	log.Println("OnClose", c.GetExtraData())
 }
 
 func Runmain() {
@@ -58,11 +61,11 @@ func Runmain() {
 
 	go srv.Start(listener, time.Second*time.Duration(1))
 
-	fmt.Println("listening:", listener.Addr())
+	log.Println("listening:", listener.Addr())
 
-	chSig := make(chan os.Signal)
-	signal.Notify(chSig, syscall.SIGINT, syscall.SIGTERM)
-	fmt.Println("Signal:", <-chSig)
+	c := make(chan os.Signal)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	log.Println("signal:", <-c)
 
 	srv.Stop()
 }

@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"time"
 
-	"gotcp_test/echo"
+	"demo/gotcp_test/echo"
 )
 
 func checkError(err error) {
@@ -31,10 +30,10 @@ func Runmain() {
 		p, err := protocol.ReadPacket(conn)
 		if err == nil {
 			npack := p.(*echo.EchoMsgPacket)
-			fmt.Printf("Server reply:[%v] [%v]\n", npack.GetLength(), string(npack.GetBody()))
+			log.Printf("Server reply:[%v] [%v]\n", npack.GetLength(), string(npack.GetBody()))
 		}
 
-		time.Sleep(time.Second * time.Duration(2))
+		time.Sleep(time.Second * time.Duration(1))
 	}
 }
 
