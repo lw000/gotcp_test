@@ -66,7 +66,7 @@ func Runmain() {
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	log.Println("signal:", <-c)
-
+	close(c)
 	srv.Stop()
 }
 
