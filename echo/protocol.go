@@ -16,16 +16,16 @@ type EchoMsgPacket struct {
 type EchoMsgProtocol struct {
 }
 
-func (this *EchoMsgPacket) Serialize() []byte {
-	return this.buff
+func (emp *EchoMsgPacket) Serialize() []byte {
+	return emp.buff
 }
 
-func (this *EchoMsgPacket) GetLength() uint32 {
-	return binary.BigEndian.Uint32(this.buff[0:4])
+func (emp *EchoMsgPacket) GetLength() uint32 {
+	return binary.BigEndian.Uint32(emp.buff[0:4])
 }
 
-func (this *EchoMsgPacket) GetBody() []byte {
-	return this.buff[4:]
+func (emp *EchoMsgPacket) GetBody() []byte {
+	return emp.buff[4:]
 }
 
 func NewEchoMsgPacket(buff []byte, hasLengthField bool) *EchoMsgPacket {
@@ -41,15 +41,15 @@ func NewEchoMsgPacket(buff []byte, hasLengthField bool) *EchoMsgPacket {
 	return p
 }
 
-func (this *EchoMsgProtocol) ReadPacket(conn *net.TCPConn) (gotcp.Packet, error) {
-	var (
-		lengthBytes []byte = make([]byte, 4)
-		length      uint32
-	)
-
+func (emp *EchoMsgProtocol) ReadPacket(conn *net.TCPConn) (gotcp.Packet, error) {
+	lengthBytes := make([]byte, 4)
 	if _, err := io.ReadFull(conn, lengthBytes); err != nil {
 		return nil, err
 	}
+
+	var (
+		length uint32
+	)
 
 	if length = binary.BigEndian.Uint32(lengthBytes); length > 1024 {
 		return nil, fmt.Errorf("the size of packet is larger than the limit")

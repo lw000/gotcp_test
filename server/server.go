@@ -23,7 +23,7 @@ func checkError(err error) {
 type Callback struct {
 }
 
-func (this *Callback) OnConnect(c *gotcp.Conn) bool {
+func (cb *Callback) OnConnect(c *gotcp.Conn) bool {
 	addr := c.GetRawConn().RemoteAddr()
 	c.PutExtraData(addr)
 
@@ -32,7 +32,7 @@ func (this *Callback) OnConnect(c *gotcp.Conn) bool {
 	return true
 }
 
-func (this *Callback) OnMessage(c *gotcp.Conn, p gotcp.Packet) bool {
+func (cb *Callback) OnMessage(c *gotcp.Conn, p gotcp.Packet) bool {
 	packet := p.(*echo.EchoMsgPacket)
 	fmt.Printf("OnMessage:[%v] [%v]\n", packet.GetLength(), string(packet.GetBody()))
 	err := c.AsyncWritePacket(echo.NewEchoMsgPacket(p.Serialize(), true), time.Second)
@@ -42,7 +42,7 @@ func (this *Callback) OnMessage(c *gotcp.Conn, p gotcp.Packet) bool {
 	return true
 }
 
-func (this *Callback) OnClose(c *gotcp.Conn) {
+func (cb *Callback) OnClose(c *gotcp.Conn) {
 	log.Println("OnClose", c.GetExtraData())
 }
 
@@ -68,10 +68,6 @@ func Runmain() {
 	log.Println("signal:", <-c)
 	close(c)
 	srv.Stop()
-}
-
-func Runwait() {
-
 }
 
 func main() {

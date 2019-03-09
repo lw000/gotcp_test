@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gansidui/gotcp"
 	"log"
 	"net"
 	"time"
@@ -15,19 +16,28 @@ func checkError(err error) {
 }
 
 func Runmain() {
-	tcpAddr, error := net.ResolveTCPAddr("tcp4", "127.0.0.1:9905")
-	checkError(error)
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:9905")
+	checkError(err)
 
 	conn, err := net.DialTCP("tcp", nil, tcpAddr)
 	checkError(err)
-	defer conn.Close()
+	defer func() {
+		err = conn.Close()
+		if err != nil {
+
+		}
+	}()
 
 	protocol := &echo.EchoMsgProtocol{}
 
 	for i := 0; i < 3; i++ {
-		conn.Write(echo.NewEchoMsgPacket([]byte("hello"), false).Serialize())
+		var n int
+		n, err = conn.Write(echo.NewEchoMsgPacket([]byte("hello"), false).Serialize())
+		if err != nil {
 
-		p, err := protocol.ReadPacket(conn)
+		}
+		var p gotcp.Packet
+		p, err = protocol.ReadPacket(conn)
 		if err == nil {
 			npack := p.(*echo.EchoMsgPacket)
 			log.Printf("Server reply:[%v] [%v]\n", npack.GetLength(), string(npack.GetBody()))

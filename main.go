@@ -16,16 +16,17 @@ func Int64ToBytes(v int64) []byte {
 	var buffer bytes.Buffer
 	err := binary.Write(&buffer, binary.BigEndian, v)
 	if err != nil {
-		fmt.Println("err occur:", err)
+		fmt.Println(err)
 		return nil
 	}
+
 	return buffer.Bytes()
 }
 
 func Int32ToBytes(v uint32) []byte {
-	bytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(bytes, v)
-	return bytes
+	buf := make([]byte, 4)
+	binary.BigEndian.PutUint32(buf, v)
+	return buf
 }
 
 func main() {
